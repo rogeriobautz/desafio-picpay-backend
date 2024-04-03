@@ -13,6 +13,11 @@ export class UserController {
     return {usuario_criado: await this.userService.create(createUserDto)};
   }
 
+  @Get()
+  async getUser(@Body() updateUserDto: UpdateUserDto, @Query() query: QueryDto) {
+    return {usuario_criado: await this.userService.findBy(query)};
+  }
+
   @Get('all')
   findAll() {
     return this.userService.findAll();
@@ -20,9 +25,7 @@ export class UserController {
 
   
   @Patch('update')
-  updateByCpfCnpj(
-    @Body() updateUserDto: UpdateUserDto, 
-    @Query() query: QueryDto) {
+  updateUser(@Body() updateUserDto: UpdateUserDto, @Query() query: QueryDto) {
       return this.userService.update(query, updateUserDto);
   }
 

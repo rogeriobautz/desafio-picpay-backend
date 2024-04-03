@@ -20,7 +20,8 @@ export class UserService {
   ) { }
 
   async create(createUserDto: CreateUserDto) {
-    await this.cpfnCnpjandEmailUnique(createUserDto.cpf_cnpj, createUserDto.email,);
+    await this.cpfnCnpjExists(createUserDto.cpf_cnpj);
+    await this.emailExists(createUserDto.email);
     return await this.userRepository.save(
       new User(
         createUserDto.nome,
@@ -32,17 +33,27 @@ export class UserService {
     );
   }
 
-  async cpfnCnpjandEmailUnique(cpf_cnpj: number, email: string) {
+  async cpfnCnpjExists(cpf_cnpj: number) {
     if ((await this.findByCpfCnpj(cpf_cnpj)).length > 0) {
-      throw new ConflictException(
-        `Já existe um usuário associado ao CPF/CNPJ ${cpf_cnpj}`,
-      );
+      throw new ConflictException( `Já existe um usuário associado ao CPF/CNPJ ${cpf_cnpj}`);
     }
+  }
+
+  async emailExists(email: string) {
     if ((await this.findByEmail(email)).length > 0) {
-      throw new ConflictException(
-        `Já existe um usuário associado ao e-mail ${email}`,
-      );
+      throw new ConflictException(`Já existe um usuário associado ao e-mail ${email}`);
     }
+  }
+
+  async findBy(query: QueryDto) {
+    console.log(query);
+    if (query.cpf_cnpj != null) {
+      return await this.findByCpfCnpj(query.cpf_cnpj);
+    }
+    if (query.email != null) {
+      return this.findByEmail(query.email);
+    }
+    throw new BadRequestException('Parâmetros inválidos ou insuficientes');
   }
 
   async findAll() {
@@ -50,16 +61,16 @@ export class UserService {
   }
 
   async update(query: QueryDto, updateUserDto: UpdateUserDto) {
-      console.log(query)
-      if(query.cpf_cnpj != null){
-        return this.updateByCpfCnpj(+query.cpf_cnpj, updateUserDto);
-      }
-      if(query.email != null){
-        return this.updateByEmail(query.email, updateUserDto);
-      }
-      throw new BadRequestException('Parâmetros inválidos ou insuficientes');
+    console.log(query);
+    if (query.cpf_cnpj != null) {
+      return this.updateByCpfCnpj(+query.cpf_cnpj, updateUserDto);
+    }
+    if (query.email != null) {
+      return this.updateByEmail(query.email, updateUserDto);
+    }
+    throw new BadRequestException('Parâmetros inválidos ou insuficientes');
   }
-  
+
   async updateByCpfCnpj(cpf_cnpj: number, updateUserDto: UpdateUserDto) {
     const result = await this.userRepository.update({ cpf_cnpj: cpf_cnpj }, updateUserDto,);
     if (result.affected === 0) {
