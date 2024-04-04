@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SqlLiteConfigService } from './config/sqlite.config.service';
-import { TransactionModule } from './transactions/transactions.module';
+import { TransactionsModule } from './transactions/transactions.module';
 import { UserModule } from './user/user.module';
 import { SaldoModule } from './saldo/saldo.module';
 @Module({
@@ -13,7 +13,7 @@ import { SaldoModule } from './saldo/saldo.module';
       useClass: SqlLiteConfigService,
       inject: [SqlLiteConfigService],
     }),
-    TransactionModule,
+    TransactionsModule,
     UserModule,
     SaldoModule,],
   controllers: [AppController],

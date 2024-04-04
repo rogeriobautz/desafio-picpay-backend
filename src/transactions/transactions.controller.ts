@@ -1,34 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { TransactionService } from './transactions.service';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, ParseUUIDPipe } from '@nestjs/common';
+import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transactions.dto';
-import { UpdateTransactionDto } from './dto/update-transactions.dto';
+import { UUID } from 'crypto';
 
 @Controller('transaction')
-export class TransactionController {
-  constructor(private readonly transactionService: TransactionService) {}
+export class TransactionsController {
+  constructor(private readonly transactionService: TransactionsService) {}
 
-  @Post()
-  create(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionService.create(createTransactionDto);
+  @Post('execute')
+  execute(@Body() createTransactionDto: CreateTransactionDto) {
+    return this.transactionService.transfere(createTransactionDto);
   }
 
-  @Get()
-  findAll() {
-    return this.transactionService.findAll();
+  @Get('find/pagador/:cpf')
+  async findByPagador(@Param('cpfcnpj', ParseIntPipe) cpf_cnpj: number) {
+    return await this.transactionService.findByPagadorCpf(cpf_cnpj);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.transactionService.findOne(+id);
+  @Get('find/recebedor/:cpf')
+  async findByRecebedor(@Param('cpfcnpj', ParseIntPipe) cpf_cnpj: number) {
+    return await this.transactionService.findByRecebedorCpf(cpf_cnpj);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
-    return this.transactionService.update(+id, updateTransactionDto);
+  @Get('find/:uuid')
+  async findByUUID(@Param('uuid', ParseUUIDPipe) uuid: UUID) {
+    return await this.transactionService.findByUUID(uuid);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.transactionService.remove(+id);
+  @Get('find/:date')
+  async findByDate(@Param('uuid') date: Date) {
+    return await this.transactionService.findByDate(date);
   }
+
 }
