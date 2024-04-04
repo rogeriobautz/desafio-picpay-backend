@@ -15,7 +15,7 @@ export class UserController {
 
   @Get()
   async getUser(@Body() updateUserDto: UpdateUserDto, @Query() query: QueryDto) {
-    return {usuario_criado: await this.userService.findBy(query)};
+    return {usuario_criado: await this.userService.findByQuery(query)};
   }
 
   @Get('all')

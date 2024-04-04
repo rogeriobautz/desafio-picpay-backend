@@ -34,21 +34,21 @@ export class UserService {
   }
 
   async cpfnCnpjExists(cpf_cnpj: number) {
-    if ((await this.findByCpfCnpj(cpf_cnpj)).length > 0) {
+    if ((await this.findOneByCpfCnpj(cpf_cnpj))) {
       throw new ConflictException( `Já existe um usuário associado ao CPF/CNPJ ${cpf_cnpj}`);
     }
   }
 
   async emailExists(email: string) {
-    if ((await this.findByEmail(email)).length > 0) {
+    if ((await this.findByEmail(email))) {
       throw new ConflictException(`Já existe um usuário associado ao e-mail ${email}`);
     }
   }
 
-  async findBy(query: QueryDto) {
+  async findByQuery(query: QueryDto) {
     console.log(query);
     if (query.cpf_cnpj != null) {
-      return await this.findByCpfCnpj(query.cpf_cnpj);
+      return await this.findOneByCpfCnpj(query.cpf_cnpj);
     }
     if (query.email != null) {
       return this.findByEmail(query.email);
@@ -77,7 +77,7 @@ export class UserService {
       throw new NotFoundException("Usuário não encontrado");
     }
     else {
-      return { usuario_atualizado: (await this.findByCpfCnpj(cpf_cnpj))[0] };
+      return { usuario_atualizado: (await this.findOneByCpfCnpj(cpf_cnpj)) };
     }
   }
 
@@ -92,7 +92,7 @@ export class UserService {
   }
 
   async remove(cpf_cnpj: number) {
-    const usuario = await this.findByCpfCnpj(cpf_cnpj);
+    const usuario = await this.findOneByCpfCnpj(cpf_cnpj);
     if (usuario == null) {
       throw new NotFoundException(`Usuário com CPF/CNPJ ${cpf_cnpj} não encontrado`);
     }
@@ -105,11 +105,11 @@ export class UserService {
     }
   }
 
-  async findByCpfCnpj(cpf_cnpj: number) {
-    return await this.userRepository.findBy({ cpf_cnpj: cpf_cnpj });
+  async findOneByCpfCnpj(cpf_cnpj: number) {
+    return await this.userRepository.findOneBy({ cpf_cnpj: cpf_cnpj });
   }
 
   async findByEmail(email: string) {
-    return await this.userRepository.findBy({ email: email });
+    return await this.userRepository.findOneBy({ email: email });
   }
 }

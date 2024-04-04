@@ -1,7 +1,7 @@
 import { IsNotEmpty } from "class-validator";
 import { Column, CreateDateColumn } from "typeorm";
 
-export class Transaction {
+export class Transactions {
 
     constructor(valor: number, pagadorCpf: number, recebedorCpf: number){
         this.valor = valor;

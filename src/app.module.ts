@@ -4,8 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SqlLiteConfigService } from './config/sqlite.config.service';
-import { TransactionModule } from './transaction/transaction.module';
+import { TransactionModule } from './transactions/transactions.module';
 import { UserModule } from './user/user.module';
+import { SaldoModule } from './saldo/saldo.module';
 @Module({
   imports: [ConfigModule.forRoot({isGlobal : true}),
     TypeOrmModule.forRootAsync({
@@ -13,7 +14,8 @@ import { UserModule } from './user/user.module';
       inject: [SqlLiteConfigService],
     }),
     TransactionModule,
-    UserModule,],
+    UserModule,
+    SaldoModule,],
   controllers: [AppController],
   providers: [AppService],
 })

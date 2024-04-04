@@ -17,7 +17,7 @@ export class User {
   @IsNotEmpty()
   nome: string;
 
-  @PrimaryColumn({ name: 'CPFCNPJ'})
+  @PrimaryColumn({ name: 'CPF_CNPJ'})
   @IsNotEmpty()
   cpf_cnpj: number;
 
