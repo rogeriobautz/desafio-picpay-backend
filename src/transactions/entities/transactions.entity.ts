@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator";
-import { UUID, randomUUID } from "crypto";
 import { Column, CreateDateColumn } from "typeorm";
+import { v4 as uuidv4 } from 'uuid';
 
 export class Transactions {
 
@@ -8,11 +8,11 @@ export class Transactions {
         this.valor = valor;
         this.pagadorCpf = pagadorCpf;
         this.recebedorCpf = recebedorCpf;
-        this.uuid = randomUUID();
+        this.uuid = uuidv4();
     }
     
     @Column({name: 'UUID'})
-    uuid: UUID;
+    uuid: string;
 
     @Column({name: 'VALOR'})
     @IsNotEmpty()
