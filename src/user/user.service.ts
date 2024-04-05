@@ -4,6 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -11,17 +12,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { QueryDto } from './dto/query-dto';
+import { SaldoService } from 'src/saldo/saldo.service';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>, private readonly saldoService: SaldoService
   ) { }
 
   async create(createUserDto: CreateUserDto) {
     await this.cpfnCnpjExists(createUserDto.cpf_cnpj);
     await this.emailExists(createUserDto.email);
-    return await this.userRepository.save(
+    const user =  await this.userRepository.save(
       new User(
         createUserDto.nome,
         createUserDto.cpf_cnpj,
@@ -30,6 +32,9 @@ export class UserService {
         createUserDto.user_type,
       ),
     );
+
+    const saldo = await this.saldoService.create(createUserDto.cpf_cnpj, createUserDto.saldo == null ? 0 : createUserDto.saldo);
+    return {user, saldo};
   }
 
   async cpfnCnpjExists(cpf_cnpj: number) {
@@ -90,10 +95,14 @@ export class UserService {
     }
   }
 
-  async remove(cpf_cnpj: number) {
+  async remove(cpf_cnpj: number) { 
     const usuario = await this.findOneByCpfCnpj(cpf_cnpj);
     if (usuario == null) {
       throw new NotFoundException(`Usuário com CPF/CNPJ ${cpf_cnpj} não encontrado`);
+    }
+    const saldo = await this.saldoService.findByCpfCnpj(cpf_cnpj);
+    if (saldo != null && saldo.valor > 0) {
+      throw new UnprocessableEntityException(`Não é possível deletar um usuário com saldo em conta: CPF/CNPJ ${cpf_cnpj} | Saldo: R$${saldo.valor}`);
     }
     const result = await this.userRepository.delete({ cpf_cnpj: cpf_cnpj });
     if (result.affected == 0) {

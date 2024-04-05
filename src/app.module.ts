@@ -17,6 +17,6 @@ import { SaldoModule } from './saldo/saldo.module';
     UserModule,
     SaldoModule,],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule {}

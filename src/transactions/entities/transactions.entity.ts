@@ -1,7 +1,8 @@
 import { IsNotEmpty } from "class-validator";
-import { Column, CreateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 import { v4 as uuidv4 } from 'uuid';
 
+@Entity({ name: 'Transactions', schema: 'PicPay' })
 export class Transactions {
 
     constructor(valor: number, pagadorCpf: number, recebedorCpf: number){
@@ -11,7 +12,7 @@ export class Transactions {
         this.uuid = uuidv4();
     }
     
-    @Column({name: 'UUID'})
+    @PrimaryColumn({name: 'UUID'})
     uuid: string;
 
     @Column({name: 'VALOR'})

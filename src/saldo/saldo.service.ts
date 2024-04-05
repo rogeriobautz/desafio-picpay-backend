@@ -21,10 +21,11 @@ export class SaldoService {
 
   async subtrai(cpf_cnpj: number, valor: number): Promise<Saldo>{
     const saldo = await this.findByCpfCnpj(cpf_cnpj);
-    saldo.valor -= valor;
-    if(saldo.valor < 0){
-      throw new UnprocessableEntityException(`Saldo atual insuficiente (R$${saldo.valor})`);
+    const valor_saldo_futuro = saldo.valor - valor;
+    if(valor_saldo_futuro < 0){
+      throw new UnprocessableEntityException(`Saldo atual insuficiente (Saldo R$${saldo.valor} | Valor requisitado R$${valor})`);
     }
+    saldo.valor = valor_saldo_futuro;
     await this.saldoRepository.update({cpf_cnpj: cpf_cnpj}, saldo);
     return saldo;
   }

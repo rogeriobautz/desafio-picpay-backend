@@ -1,6 +1,7 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { Column, Entity, Generated, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { userType } from '../enum/user.type.enum';
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity({ name: 'Users', schema: 'PicPay' })
 export class User {
@@ -11,7 +12,11 @@ export class User {
     this.email= email;
     this.senha = senha;
     this.user_type = user_type;
+    this.uuid = uuidv4();
   }
+
+  @Column({name: "UUID"})
+    uuid: string;
 
   @Column({ name: 'NOME' })
   @IsNotEmpty()

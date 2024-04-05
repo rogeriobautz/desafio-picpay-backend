@@ -1,6 +1,5 @@
-import { IsEmail, IsNotEmpty } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNumber, IsOptional, isNumber } from "class-validator";
 import { userType } from "../enum/user.type.enum";
-import { Transform } from "class-transformer";
 
 export class CreateUserDto{
 
@@ -18,5 +17,9 @@ export class CreateUserDto{
 
   @IsNotEmpty()
   user_type: userType;
+
+  @IsNumber()
+  @IsOptional()
+  saldo: number;
 
 }
