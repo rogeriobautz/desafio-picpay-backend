@@ -29,17 +29,17 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
     try {
       this.startTransaction();
       await this.validaUsuarios(dto.pagadorCpf, dto.recebedorCpf);
-      const saldo_recebedor_pos_soma = await this.saldoService.soma(dto.recebedorCpf, dto.valor);
-      const saldo_pagador_pos_subtracao = await this.saldoService.subtrai(dto.pagadorCpf, dto.valor);
-      const transaction = await this.transactionsRepository.save(new Transactions(dto.valor, dto.pagadorCpf, dto.recebedorCpf));
+      const saldo_recebedor_pos_transacao = await this.saldoService.soma(dto.recebedorCpf, dto.valor);
+      const saldo_pagador_pos_transacao = await this.saldoService.subtrai(dto.pagadorCpf, dto.valor);
+      const transacao = await this.transactionsRepository.save(new Transactions(dto.valor, dto.pagadorCpf, dto.recebedorCpf));
       await this.autorizadorExterno();
       await this.enviaNotificacao();
       this.commitTransaction();
       return {
         descricao: "Saldos após a transação",
-        transacao: transaction,
-        saldo_pagador: saldo_pagador_pos_subtracao,
-        saldo_recebedor: saldo_recebedor_pos_soma
+        transacao: transacao,
+        saldo_pagador: saldo_pagador_pos_transacao.valor,
+        saldo_recebedor: saldo_recebedor_pos_transacao.valor
       };
     } 
     catch (error) {

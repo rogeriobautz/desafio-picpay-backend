@@ -22,7 +22,7 @@ export class TransactionsController {
   }
  
   @Get('find/:uuid')
-  async findByUUID(@Param('uuid') uuid: string) {
+  async findByUUID(@Param('uuid', ParseUUIDPipe) uuid: string) {
     return await this.transactionService.findByUUID(uuid);
   }
 

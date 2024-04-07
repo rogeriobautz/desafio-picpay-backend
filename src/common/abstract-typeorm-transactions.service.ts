@@ -1,8 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { TypeOrmDataSourceFactory } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import { DataSource, QueryRunner } from 'typeorm';
 
-@Injectable()
 export abstract class AbstractTypeOrmTransactionsService {
 
   private queryRunner:QueryRunner | null = null;
@@ -15,7 +13,7 @@ export abstract class AbstractTypeOrmTransactionsService {
   async startTransaction() {
     this.queryRunner = this.dataSourceAbstract.createQueryRunner();
     await this.queryRunner.connect();
-    await this.queryRunner.startTransaction();
+    await this.queryRunner.startTransaction('SERIALIZABLE');
   }
 
   async commitTransaction() {

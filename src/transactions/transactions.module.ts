@@ -8,9 +8,14 @@ import { SaldoModule } from 'src/saldo/saldo.module';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transactions]), UserModule, SaldoModule, HttpModule],
+  imports: [
+    TypeOrmModule.forFeature([Transactions]), 
+    HttpModule.register({ timeout: 5000 }),
+    UserModule, 
+    SaldoModule, 
+  ],
   controllers: [TransactionsController],
   providers: [TransactionsService],
   exports: [TransactionsService]
 })
-export class TransactionsModule {}
+export class TransactionsModule { }

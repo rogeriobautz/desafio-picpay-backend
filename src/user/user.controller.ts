@@ -2,8 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ConflictException, Q
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { QueryDto } from './dto/query-dto';
-
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -13,9 +11,9 @@ export class UserController {
     return {usuario_criado: await this.userService.create(createUserDto)};
   }
 
-  @Get()
-  async getUser(@Body() updateUserDto: UpdateUserDto, @Query() query: QueryDto) {
-    return {usuario_criado: await this.userService.findByQuery(query)};
+  @Get('find/:cpf_cnpj')
+  async getUser(@Param('cpf_cnpj') cpf_cnpj: number) {
+    return {usuario_criado: await this.userService.findOneByCpfCnpj(cpf_cnpj)};
   }
 
   @Get('all')
@@ -24,13 +22,13 @@ export class UserController {
   }
 
   
-  @Patch('update')
-  updateUser(@Body() updateUserDto: UpdateUserDto, @Query() query: QueryDto) {
-      return this.userService.update(query, updateUserDto);
+  @Patch('update/:cpf_cnpj')
+  updateUser(@Body() updateUserDto: UpdateUserDto, @Param('cpf_cnpj') cpf_cnpj: number) {
+      return this.userService.update(cpf_cnpj, updateUserDto);
   }
 
-  @Delete('delete')
-  remove(@Query('cpfcnpj', ParseIntPipe) cpf_cnpj?: number) {
+  @Delete('delete/:cpf_cnpj')
+  remove(@Param('cpfcnpj', ParseIntPipe) cpf_cnpj?: number) {
     return this.userService.remove(+cpf_cnpj);
   }
 }

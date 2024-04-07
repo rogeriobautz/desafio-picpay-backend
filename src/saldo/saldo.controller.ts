@@ -6,8 +6,8 @@ export class SaldoController {
 
     constructor (private saldoService: SaldoService){}
 
-    @Get('find')
-    async findByCpfCnpj(@Query('cpf_cnpj', ParseIntPipe) cpf_cnpj: number){
+    @Get('find/:cpf_cnpj')
+    async findByCpfCnpj(@Param('cpf_cnpj', ParseIntPipe) cpf_cnpj: number){
         return await this.saldoService.findByCpfCnpj(cpf_cnpj);
     }
 
