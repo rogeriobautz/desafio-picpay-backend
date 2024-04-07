@@ -38,6 +38,10 @@ export class SaldoService {
     return saldo;
   }
 
+  async findAll(): Promise<Saldo[]>{
+    return await this.saldoRepository.find();
+  }
+
   async delete(cpf_cnpj: number){
     const saldo = await this.findByCpfCnpj(cpf_cnpj);
     const result = await this.saldoRepository.delete({ cpf_cnpj: cpf_cnpj });

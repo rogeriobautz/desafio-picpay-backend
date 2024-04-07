@@ -12,7 +12,7 @@ export class CreateTransactionDto {
 
     @Column({name: 'VALOR'})
     @IsNotEmpty()
-    valor: number;
+    valor: number; 
     
     @Column({name: 'PAGADOR'})
     @IsNotEmpty()

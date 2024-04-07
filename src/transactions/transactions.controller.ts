@@ -1,12 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, ParseUUIDPipe } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transactions.dto';
-import { UUID } from 'crypto';
 
 @Controller('transaction')
 export class TransactionsController {
   constructor(private readonly transactionService: TransactionsService) {}
-
+ 
   @Post('execute')
   execute(@Body() createTransactionDto: CreateTransactionDto) {
     return this.transactionService.transfere(createTransactionDto);
@@ -23,13 +22,18 @@ export class TransactionsController {
   }
 
   @Get('find/:uuid')
-  async findByUUID(@Param('uuid', ParseUUIDPipe) uuid: UUID) {
+  async findByUUID(@Param('uuid') uuid: string) {
     return await this.transactionService.findByUUID(uuid);
   }
 
   @Get('find/:date')
   async findByDate(@Param('uuid') date: Date) {
     return await this.transactionService.findByDate(date);
+  }
+
+  @Get('find')
+  async findAll() {
+    return await this.transactionService.findAll();
   }
 
 }

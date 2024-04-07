@@ -7,53 +7,42 @@ import { SaldoService } from 'src/saldo/saldo.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, QueryRunner, Repository, Transaction } from 'typeorm';
 import { Transactions } from './entities/transactions.entity';
-import { v4 as uuidv4 } from 'uuid';
-import { Saldo } from 'src/saldo/entities/saldo.entity';
+import { AbstractTypeOrmTransactionsService } from 'src/common/abstract-typeorm-transactions.service';
 
 @Injectable()
-export class TransactionsService {
+export class TransactionsService extends AbstractTypeOrmTransactionsService{
 
   constructor(
+    @InjectRepository(Transactions) private readonly transactionsRepository: Repository<Transactions>,
     private userService: UserService,
     private saldoService: SaldoService,
-    private dataSource: DataSource,
-    @InjectRepository(Transactions) private readonly transactionsRepository: Repository<Transactions>
-  ) { }
-
-  async startTransaction() {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    return queryRunner;
+    private dataSource:DataSource
+  ) {
+    super(dataSource);
   }
 
-  async transfere(createTransactionDto: CreateTransactionDto) {
-    const { pagador, recebedor } = await this.validaUsuarios(createTransactionDto.pagadorCpf, createTransactionDto.recebedorCpf);
-    const valor = createTransactionDto.valor;
-    const queryRunner = this.startTransaction();
+  async transfere(dto: CreateTransactionDto) {
+    await this.validaUsuarios(dto.pagadorCpf, dto.recebedorCpf);
+    this.startTransaction();
+
     try {
-      let saldo_pagador = await this.saldoService.findByCpfCnpj(pagador.cpf_cnpj);
-      if(saldo_pagador.valor - valor < 0){
-        throw new UnprocessableEntityException(`Saldo atual insuficiente (Saldo R$${saldo_pagador.valor} | Valor requisitado R$${valor})`)
-      }
-      const saldo_pagador_pos_transacao = await (await queryRunner).manager.update(Saldo, { cpf_cnpj: saldo_pagador.cpf_cnpj }, { valor: saldo_pagador.valor - valor });
-      const saldo_recebedor = await this.saldoService.findByCpfCnpj(recebedor.cpf_cnpj);
-      const saldo_recebedor_pos_transacao = await (await queryRunner).manager.update(Saldo, { cpf_cnpj: saldo_recebedor.cpf_cnpj }, { valor: saldo_recebedor.valor + valor });
-      const transaction = await (await queryRunner).manager
-        .save(Transactions, { uuid: uuidv4(), valor, pagadorCpf: pagador.cpf_cnpj, recebedorCpf: recebedor.cpf_cnpj });
-      (await queryRunner).commitTransaction();
+      const saldo_recebedor_pos_soma = await this.saldoService.soma(dto.recebedorCpf, dto.valor);
+      const saldo_pagador_pos_subtracao = await this.saldoService.subtrai(dto.pagadorCpf, dto.valor);
+      const transaction = await this.transactionsRepository.save(new Transactions(dto.valor, dto.pagadorCpf, dto.recebedorCpf));
+      this.commitTransaction();
       return {
         descricao: "Saldos após a transação",
-        saldo_pagador,
-        saldo_recebedor,
-        transacao: transaction
+        transacao: transaction,
+        saldo_pagador: saldo_pagador_pos_subtracao,
+        saldo_recebedor: saldo_recebedor_pos_soma
       };
-    } catch (error) {
-      (await queryRunner).rollbackTransaction();
+    } 
+    catch (error) {
+      this.rollbackTransaction();
       throw error;
     }
     finally {
-      (await queryRunner).release();
+      this.endTransaction();
     }
   }
 
@@ -83,6 +72,10 @@ export class TransactionsService {
 
   async findByDate(date: Date) {
     return await this.transactionsRepository.findOne({ where: { created_at: date } });
+  }
+
+  async findAll() {
+    return await this.transactionsRepository.find();
   }
 
   async validaUsuarios(pagadorCpf: number, recebedorCpf: number) {
