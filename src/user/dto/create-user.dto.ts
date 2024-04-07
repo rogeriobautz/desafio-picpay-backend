@@ -20,6 +20,6 @@ export class CreateUserDto{
 
   @IsNumber()
   @IsOptional()
-  saldo: number;
+  valor_saldo: number;
 
 }

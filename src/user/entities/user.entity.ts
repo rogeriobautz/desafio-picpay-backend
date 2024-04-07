@@ -1,28 +1,29 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { Column, Entity, Generated, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Generated, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { userType } from '../enum/user.type.enum';
 import { v4 as uuidv4 } from 'uuid';
+import { Saldo } from 'src/saldo/entities/saldo.entity';
 
 @Entity({ name: 'Users', schema: 'PicPay' })
 export class User {
 
-  constructor(nome: string, cpf_cnpj: number, email: string, senha: string, user_type: userType){
-    this.nome = nome;
+  constructor(nome: string, cpf_cnpj: number, email: string, senha: string, user_type: userType) {
+    this.nome = nome; 
     this.cpf_cnpj = cpf_cnpj;
-    this.email= email;
+    this.email = email;
     this.senha = senha;
     this.user_type = user_type;
     this.uuid = uuidv4();
   }
 
-  @Column({name: "UUID"})
-    uuid: string;
+  @Column({ name: "UUID" })
+  uuid: string;
 
   @Column({ name: 'NOME' })
   @IsNotEmpty()
   nome: string;
 
-  @PrimaryColumn({ name: 'CPF_CNPJ'})
+  @PrimaryColumn({ name: 'CPF_CNPJ' })
   @IsNotEmpty()
   cpf_cnpj: number;
 
@@ -35,7 +36,7 @@ export class User {
   @IsNotEmpty()
   senha: string;
 
-  @Column({name: 'USERTYPE', enum: userType})
+  @Column({ name: 'USERTYPE', enum: userType })
   @IsNotEmpty()
   user_type: userType;
   

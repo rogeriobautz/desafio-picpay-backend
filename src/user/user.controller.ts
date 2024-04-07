@@ -11,16 +11,15 @@ export class UserController {
     return {usuario_criado: await this.userService.create(createUserDto)};
   }
 
-  @Get('find/:cpf_cnpj')
-  async getUser(@Param('cpf_cnpj') cpf_cnpj: number) {
-    return {usuario_criado: await this.userService.findOneByCpfCnpj(cpf_cnpj)};
-  }
-
-  @Get('all')
+  @Get('find/all')
   findAll() {
     return this.userService.findAll();
   }
 
+  @Get('find/:cpf_cnpj')
+  async getUser(@Param('cpf_cnpj') cpf_cnpj: number) {
+    return await this.userService.findUserByCpfCnpj(cpf_cnpj);
+  }
   
   @Patch('update/:cpf_cnpj')
   updateUser(@Body() updateUserDto: UpdateUserDto, @Param('cpf_cnpj') cpf_cnpj: number) {

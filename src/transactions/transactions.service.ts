@@ -98,7 +98,7 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
   }
 
   async validaUsuarios(pagadorCpf: number, recebedorCpf: number) {
-    const pagador = await this.userService.findOneByCpfCnpj(pagadorCpf);
+    const pagador = (await this.userService.findOneByCpfCnpj(pagadorCpf)).user;
     if (!pagador) {
       throw new NotFoundException(`Usuário pagador com cpf ${pagadorCpf} não encontrado`);
     }
@@ -106,7 +106,7 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
       throw new UnprocessableEntityException("Lojista não pode ser pagador");
     }
 
-    const recebedor = await this.userService.findOneByCpfCnpj(recebedorCpf);
+    const recebedor = (await this.userService.findOneByCpfCnpj(recebedorCpf)).user;
     if (!recebedor) {
       throw new NotFoundException(`Usuário recebedor com cpf ${recebedorCpf} não encontrado`);
     }
