@@ -5,9 +5,10 @@ import { Transactions } from './entities/transactions.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from 'src/user/user.module';
 import { SaldoModule } from 'src/saldo/saldo.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transactions]), UserModule, SaldoModule],
+  imports: [TypeOrmModule.forFeature([Transactions]), UserModule, SaldoModule, HttpModule],
   controllers: [TransactionsController],
   providers: [TransactionsService],
   exports: [TransactionsService]

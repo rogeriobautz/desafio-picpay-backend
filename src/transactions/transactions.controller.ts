@@ -20,7 +20,7 @@ export class TransactionsController {
   async findByRecebedor(@Param('cpfcnpj', ParseIntPipe) cpf_cnpj: number) {
     return await this.transactionService.findByRecebedorCpf(cpf_cnpj);
   }
-
+ 
   @Get('find/:uuid')
   async findByUUID(@Param('uuid') uuid: string) {
     return await this.transactionService.findByUUID(uuid);

@@ -1,5 +1,5 @@
 import { UUID } from 'crypto';
-import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException, HttpStatus } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transactions.dto';
 import { UserService } from 'src/user/user.service';
 import { userType } from 'src/user/enum/user.type.enum';
@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, QueryRunner, Repository, Transaction } from 'typeorm';
 import { Transactions } from './entities/transactions.entity';
 import { AbstractTypeOrmTransactionsService } from 'src/common/abstract-typeorm-transactions.service';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class TransactionsService extends AbstractTypeOrmTransactionsService{
@@ -16,19 +18,22 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
     @InjectRepository(Transactions) private readonly transactionsRepository: Repository<Transactions>,
     private userService: UserService,
     private saldoService: SaldoService,
-    private dataSource:DataSource
+    private dataSource:DataSource,
+    private readonly httpService: HttpService
   ) {
     super(dataSource);
   }
 
   async transfere(dto: CreateTransactionDto) {
-    await this.validaUsuarios(dto.pagadorCpf, dto.recebedorCpf);
-    this.startTransaction();
-
+    
     try {
+      this.startTransaction();
+      await this.validaUsuarios(dto.pagadorCpf, dto.recebedorCpf);
       const saldo_recebedor_pos_soma = await this.saldoService.soma(dto.recebedorCpf, dto.valor);
       const saldo_pagador_pos_subtracao = await this.saldoService.subtrai(dto.pagadorCpf, dto.valor);
       const transaction = await this.transactionsRepository.save(new Transactions(dto.valor, dto.pagadorCpf, dto.recebedorCpf));
+      await this.autorizadorExterno();
+      await this.enviaNotificacao();
       this.commitTransaction();
       return {
         descricao: "Saldos após a transação",
@@ -43,6 +48,20 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
     }
     finally {
       this.endTransaction();
+    }
+  }
+
+  async autorizadorExterno(){
+    const {data} = await firstValueFrom(this.httpService.get("https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc"));
+    if("Autorizado" != data.message){
+      throw new UnauthorizedException("Transação negada pelo autorizador externo");
+    }
+  }
+
+  async enviaNotificacao(){
+    const {data} = await firstValueFrom(this.httpService.get("https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6"));
+    if(true != data.message){
+      throw new UnauthorizedException("Serviço de notificação indisponível");
     }
   }
 
