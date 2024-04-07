@@ -1,8 +1,8 @@
 {
   "name": "desafio-picpay-backend",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "version": "1.0.0",
+  "description": "Desafio PicPay Backend Junior",
+  "author": "Rogerio Bautz",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
