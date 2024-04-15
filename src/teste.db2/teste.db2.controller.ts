@@ -4,6 +4,11 @@ import { TesteDb2Service } from './teste.db2.service';
 @Controller('teste-db2')
 export class TesteDb2Controller {
   constructor(private readonly testeDb2Service: TesteDb2Service) {}
+
+  @Get('conn')
+  async testeDB2conn(){
+    return await this.testeDb2Service.testeDB2conn();
+  }
   
   @Get('all')
   async selectAll(){

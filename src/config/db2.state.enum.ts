@@ -1,0 +1,6 @@
+export enum Db2StateEnum {
+    OK,
+    MISSING_TABLE,
+    MISSING_SCHEMA,
+    DATABASE_CONNECTION_FAILED
+}

@@ -13,6 +13,10 @@ export class TesteDb2Repository {
   private connection:Database;
   private tabela = (this.configService.get('DB_SCHEMA') || 'CONTA') + '.' + (this.configService.get('DB_TABLE') || 'EXTRATO');
 
+  public testeDB2conn() {
+    return this.db2ConfigService.checkDatabase();
+  }
+
   public async getConnection(){
     if(!this.connection){
       this.connection = await this.db2ConfigService.getConnection();

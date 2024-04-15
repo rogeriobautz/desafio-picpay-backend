@@ -7,6 +7,10 @@ import { Db2ConfigService } from 'src/config/db2.config.service';
 @Injectable()
 export class TesteDb2Service {
   constructor(@Inject(TesteDb2Repository) private testeDb2Repository: TesteDb2Repository) {}
+
+  public testeDB2conn() {
+    return this.testeDb2Repository.testeDB2conn();
+  }
   
   
   async selectAll(){    
