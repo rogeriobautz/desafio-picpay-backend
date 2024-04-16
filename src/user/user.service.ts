@@ -26,19 +26,20 @@ export class UserService extends AbstractTypeOrmTransactionsService {
   async create(createUserDto: CreateUserDto) {
     try {
       this.startTransaction();
-      await this.cpfnCnpjExists(createUserDto.cpf_cnpj);
+      console.log(createUserDto);
+      await this.cpfAndCnpjExists(createUserDto.cpfCnpj);
       await this.emailExists(createUserDto.email);
-      const saldo = await this.saldoService.create(createUserDto.cpf_cnpj, createUserDto.valor_saldo == null ? 0 : createUserDto.valor_saldo);
+      const saldo = await this.saldoService.create(createUserDto.cpfCnpj, createUserDto.valorSaldo == null ? 0 : createUserDto.valorSaldo);
       const user = new User(
         createUserDto.nome,
-        createUserDto.cpf_cnpj,
+        createUserDto.cpfCnpj,
         createUserDto.email,
         createUserDto.senha,
-        createUserDto.user_type
+        createUserDto.userType
       );
-      const saved_user = await this.userRepository.save(user);
+      const savedUser = await this.userRepository.save(user);
       this.commitTransaction();
-      return { user: saved_user, saldo };
+      return { user: savedUser, saldo };
     }
     catch (error) {
       this.rollbackTransaction();
@@ -49,9 +50,9 @@ export class UserService extends AbstractTypeOrmTransactionsService {
     }
   }
 
-  async cpfnCnpjExists(cpf_cnpj: number) {
-    if ((await this.findOneByCpfCnpj(cpf_cnpj))) {
-      throw new ConflictException(`Já existe um usuário associado ao CPF/CNPJ ${cpf_cnpj}`);
+  async cpfAndCnpjExists(cpfCnpj: number) {
+    if ((await this.findOneByCpfCnpj(cpfCnpj))) {
+      throw new ConflictException(`Já existe um usuário associado ao CPF/CNPJ ${cpfCnpj}`);
     }
   }
 
@@ -72,55 +73,55 @@ export class UserService extends AbstractTypeOrmTransactionsService {
 
   async adicionaSaldo(users: User[] ){
     return await Promise.all(users.map(async (user) => {
-      const saldo = await this.saldoService.findByCpfCnpj(user.cpf_cnpj);
+      const saldo = await this.saldoService.findByCpfCnpj(user.cpfCnpj);
       return {user, saldo};
     }));
   }
 
-  async findOneByCpfCnpj(cpf_cnpj: number) {
-    const user =  await this.userRepository.findOneBy({ cpf_cnpj: cpf_cnpj });
-    return (await this.adicionaSaldo([user]))[0];
+  async findOneByCpfCnpj(cpfCnpj: number) {
+    const user =  await this.userRepository.findOneBy({ cpfCnpj: cpfCnpj });
+    return user ? (await this.adicionaSaldo([user]))[0] : null;
   }
 
-  async findUserByCpfCnpj(cpf_cnpj: number) {
-    const user = await this.userRepository.findOneBy({ cpf_cnpj: cpf_cnpj });
+  async findUserByCpfCnpj(cpfCnpj: number) {
+    const user = await this.userRepository.findOneBy({ cpfCnpj: cpfCnpj });
     if (user === null) {
-      throw new NotFoundException(`Nenhum usuário com o Cpf/Cnpj ${cpf_cnpj} encontrado`);
+      throw new NotFoundException(`Nenhum usuário com o Cpf/Cnpj ${cpfCnpj} encontrado`);
     }
     return (await this.adicionaSaldo([user]))[0];
   }
 
-  async update(cpf_cnpj: number, updateUserDto: UpdateUserDto) {
-    if (cpf_cnpj != null) {
-      return this.updateByCpfCnpj(+cpf_cnpj, updateUserDto);
+  async update(cpfCnpj: number, updateUserDto: UpdateUserDto) {
+    if (cpfCnpj != null) {
+      return this.updateByCpfCnpj(+cpfCnpj, updateUserDto);
     }
   }
 
-  async updateByCpfCnpj(cpf_cnpj: number, updateUserDto: UpdateUserDto) {
-    const result = await this.userRepository.update({ cpf_cnpj: cpf_cnpj }, updateUserDto,);
+  async updateByCpfCnpj(cpfCnpj: number, updateUserDto: UpdateUserDto) {
+    const result = await this.userRepository.update({ cpfCnpj: cpfCnpj }, updateUserDto,);
     if (result.affected === 0) {
       throw new NotFoundException("Usuário não encontrado");
     }
     else {
-      return { usuario_atualizado: (await this.findOneByCpfCnpj(cpf_cnpj)) };
+      return { usuarioAtualizado: (await this.findOneByCpfCnpj(cpfCnpj)) };
     }
   }
 
-  async remove(cpf_cnpj: number) {
-    const usuario = await this.findOneByCpfCnpj(cpf_cnpj);
+  async remove(cpfCnpj: number) {
+    const usuario = await this.findOneByCpfCnpj(cpfCnpj);
     if (usuario == null) {
-      throw new NotFoundException(`Usuário com CPF/CNPJ ${cpf_cnpj} não encontrado`);
+      throw new NotFoundException(`Usuário com CPF/CNPJ ${cpfCnpj} não encontrado`);
     }
-    const saldo = await this.saldoService.findByCpfCnpj(cpf_cnpj);
+    const saldo = await this.saldoService.findByCpfCnpj(cpfCnpj);
     if (saldo != null && saldo.valor > 0) {
-      throw new UnprocessableEntityException(`Não é possível deletar um usuário com saldo em conta: CPF/CNPJ ${cpf_cnpj} | Saldo: R$${saldo.valor}`);
+      throw new UnprocessableEntityException(`Não é possível deletar um usuário com saldo em conta: CPF/CNPJ ${cpfCnpj} | Saldo: R$${saldo.valor}`);
     }
-    const result = await this.userRepository.delete({ cpf_cnpj: cpf_cnpj });
+    const result = await this.userRepository.delete({ cpfCnpj: cpfCnpj });
     if (result.affected == 0) {
-      throw new InternalServerErrorException(`Não foi possível deletar o usuário com CPF/CNPJ ${cpf_cnpj}`);
+      throw new InternalServerErrorException(`Não foi possível deletar o usuário com CPF/CNPJ ${cpfCnpj}`);
     }
     else {
-      return { usuario_deletado: usuario };
+      return { usuarioDeletado: usuario };
     }
   }
 

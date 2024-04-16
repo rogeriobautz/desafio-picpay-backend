@@ -11,9 +11,9 @@ export class SaldoController {
         return await this.saldoService.findAll();
     }
     
-    @Get('find/:cpf_cnpj')
-    async findByCpfCnpj(@Param('cpf_cnpj', ParseIntPipe) cpf_cnpj: number){
-        return await this.saldoService.findByCpfCnpj(cpf_cnpj);
+    @Get('find/:cpfCnpj')
+    async findByCpfCnpj(@Param('cpfCnpj', ParseIntPipe) cpfCnpj: number){
+        return await this.saldoService.findByCpfCnpj(cpfCnpj);
     }
 
 }

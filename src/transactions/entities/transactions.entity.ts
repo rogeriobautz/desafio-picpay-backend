@@ -28,6 +28,6 @@ export class Transactions {
     recebedorCpf: number;    
 
     @CreateDateColumn()
-    created_at: Date;
+    createdAt: Date;
 
 }

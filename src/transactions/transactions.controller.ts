@@ -12,13 +12,13 @@ export class TransactionsController {
   }
 
   @Get('find/pagador/:cpf')
-  async findByPagador(@Param('cpfcnpj', ParseIntPipe) cpf_cnpj: number) {
-    return await this.transactionService.findByPagadorCpf(cpf_cnpj);
+  async findByPagador(@Param('cpfcnpj', ParseIntPipe) cpfCnpj: number) {
+    return await this.transactionService.findByPagadorCpf(cpfCnpj);
   }
 
   @Get('find/recebedor/:cpf')
-  async findByRecebedor(@Param('cpfcnpj', ParseIntPipe) cpf_cnpj: number) {
-    return await this.transactionService.findByRecebedorCpf(cpf_cnpj);
+  async findByRecebedor(@Param('cpfcnpj', ParseIntPipe) cpfCnpj: number) {
+    return await this.transactionService.findByRecebedorCpf(cpfCnpj);
   }
  
   @Get('find/:uuid')

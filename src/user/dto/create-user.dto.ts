@@ -7,7 +7,7 @@ export class CreateUserDto{
   nome: string;
 
   @IsNotEmpty()
-  cpf_cnpj: number;
+  cpfCnpj: number;
 
   @IsEmail()
   email: string;
@@ -16,10 +16,10 @@ export class CreateUserDto{
   senha: string;
 
   @IsNotEmpty()
-  user_type: userType;
+  userType: userType;
 
   @IsNumber()
   @IsOptional()
-  valor_saldo: number;
+  valorSaldo: number;
 
 }

@@ -7,12 +7,12 @@ import { Saldo } from 'src/saldo/entities/saldo.entity';
 @Entity({ name: 'Users', schema: 'PicPay' })
 export class User {
 
-  constructor(nome: string, cpf_cnpj: number, email: string, senha: string, user_type: userType) {
+  constructor(nome: string, cpfCnpj: number, email: string, senha: string, userType: userType) {
     this.nome = nome; 
-    this.cpf_cnpj = cpf_cnpj;
+    this.cpfCnpj = cpfCnpj;
     this.email = email;
     this.senha = senha;
-    this.user_type = user_type;
+    this.userType = userType;
     this.uuid = uuidv4();
   }
 
@@ -23,9 +23,9 @@ export class User {
   @IsNotEmpty()
   nome: string;
 
-  @PrimaryColumn({ name: 'CPF_CNPJ' })
+  @PrimaryColumn({ name: 'cpfCnpj' })
   @IsNotEmpty()
-  cpf_cnpj: number;
+  cpfCnpj: number;
 
   @PrimaryColumn({ name: 'EMAIL' })
   @IsEmail()
@@ -38,7 +38,7 @@ export class User {
 
   @Column({ name: 'USERTYPE', enum: userType })
   @IsNotEmpty()
-  user_type: userType;
+  userType: userType;
   
 }
 

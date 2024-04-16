@@ -7,8 +7,6 @@ import { SqlLiteConfigService } from './config/sqlite.config.service';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UserModule } from './user/user.module';
 import { SaldoModule } from './saldo/saldo.module';
-import { Db2ConfigService } from './config/db2.config.service';
-import { TesteDb2Module } from './teste.db2/teste.db2.module';
 @Module({
   imports: [ConfigModule.forRoot({isGlobal : true}),
     TypeOrmModule.forRootAsync({
@@ -17,10 +15,8 @@ import { TesteDb2Module } from './teste.db2/teste.db2.module';
     }),
     TransactionsModule,
     UserModule,
-    SaldoModule,
-    TesteDb2Module,],
+    SaldoModule,],
   controllers: [AppController],
-  providers: [AppService,
-    Db2ConfigService]
+  providers: [AppService]
 })
 export class AppModule {}

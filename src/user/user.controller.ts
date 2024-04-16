@@ -8,7 +8,7 @@ export class UserController {
 
   @Post('create')
   async create(@Body() createUserDto: CreateUserDto) {
-    return {usuario_criado: await this.userService.create(createUserDto)};
+    return {usuarioCriado: await this.userService.create(createUserDto)};
   }
 
   @Get('find/all')
@@ -16,18 +16,18 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get('find/:cpf_cnpj')
-  async getUser(@Param('cpf_cnpj') cpf_cnpj: number) {
-    return await this.userService.findUserByCpfCnpj(cpf_cnpj);
+  @Get('find/:cpfCnpj')
+  async getUser(@Param('cpfCnpj') cpfCnpj: number) {
+    return await this.userService.findUserByCpfCnpj(cpfCnpj);
   }
   
-  @Patch('update/:cpf_cnpj')
-  updateUser(@Body() updateUserDto: UpdateUserDto, @Param('cpf_cnpj') cpf_cnpj: number) {
-      return this.userService.update(cpf_cnpj, updateUserDto);
+  @Patch('update/:cpfCnpj')
+  updateUser(@Body() updateUserDto: UpdateUserDto, @Param('cpfCnpj') cpfCnpj: number) {
+      return this.userService.update(cpfCnpj, updateUserDto);
   }
 
-  @Delete('delete/:cpf_cnpj')
-  remove(@Param('cpfcnpj', ParseIntPipe) cpf_cnpj?: number) {
-    return this.userService.remove(+cpf_cnpj);
+  @Delete('delete/:cpfCnpj')
+  remove(@Param('cpfcnpj', ParseIntPipe) cpfCnpj?: number) {
+    return this.userService.remove(+cpfCnpj);
   }
 }

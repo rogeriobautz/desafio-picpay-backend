@@ -7,33 +7,33 @@ import { Saldo } from './entities/saldo.entity';
 export class SaldoService {
   constructor(@InjectRepository(Saldo) private saldoRepository: Repository<Saldo>) { }
 
-  async create(cpf_cnpj: number, valor: number) {
-    const saldo = new Saldo(cpf_cnpj, valor);
+  async create(cpfCnpj: number, valor: number) {
+    const saldo = new Saldo(cpfCnpj, valor);
     return await this.saldoRepository.save(saldo);
   }
 
-  async soma(cpf_cnpj: number, valor: number): Promise<Saldo> {
-    const saldo = await this.findByCpfCnpj(cpf_cnpj);
+  async soma(cpfCnpj: number, valor: number): Promise<Saldo> {
+    const saldo = await this.findByCpfCnpj(cpfCnpj);
     saldo.valor += valor;
-    await this.saldoRepository.update({ cpf_cnpj: cpf_cnpj }, saldo);
+    await this.saldoRepository.update({ cpfCnpj: cpfCnpj }, saldo);
     return saldo;
   }
 
-  async subtrai(cpf_cnpj: number, valor: number): Promise<Saldo> {
-    const saldo = await this.findByCpfCnpj(cpf_cnpj);
-    const valor_saldo_futuro = saldo.valor - valor;
-    if (valor_saldo_futuro < 0) {
+  async subtrai(cpfCnpj: number, valor: number): Promise<Saldo> {
+    const saldo = await this.findByCpfCnpj(cpfCnpj);
+    const valorSaldoFuturo = saldo.valor - valor;
+    if (valorSaldoFuturo < 0) {
       throw new UnprocessableEntityException(`Saldo atual insuficiente (Saldo R$${saldo.valor} | Valor requisitado R$${valor})`);
     }
-    saldo.valor = valor_saldo_futuro;
-    await this.saldoRepository.update({ cpf_cnpj: cpf_cnpj }, saldo);
+    saldo.valor = valorSaldoFuturo;
+    await this.saldoRepository.update({ cpfCnpj: cpfCnpj }, saldo);
     return saldo;
   }
 
-  async findByCpfCnpj(cpf_cnpj: number): Promise<Saldo> {
-    const saldo = await this.saldoRepository.findOneBy({ cpf_cnpj: cpf_cnpj });
+  async findByCpfCnpj(cpfCnpj: number): Promise<Saldo> {
+    const saldo = await this.saldoRepository.findOneBy({ cpfCnpj: cpfCnpj });
     if (saldo == null) {
-      throw new NotFoundException(`Saldo relacionado ao CPF/CNPJ ${cpf_cnpj} não encontrado`);
+      throw new NotFoundException(`Saldo relacionado ao CPF/CNPJ ${cpfCnpj} não encontrado`);
     }
     return saldo;
   }
@@ -42,14 +42,14 @@ export class SaldoService {
     return await this.saldoRepository.find();
   }
 
-  async delete(cpf_cnpj: number) {
-    const saldo = await this.findByCpfCnpj(cpf_cnpj);
-    const result = await this.saldoRepository.delete({ cpf_cnpj: cpf_cnpj });
+  async delete(cpfCnpj: number) {
+    const saldo = await this.findByCpfCnpj(cpfCnpj);
+    const result = await this.saldoRepository.delete({ cpfCnpj: cpfCnpj });
     if (result.affected == 0) {
-      throw new InternalServerErrorException(`Não foi possível deletar o saldo com CPF/CNPJ ${cpf_cnpj}`);
+      throw new InternalServerErrorException(`Não foi possível deletar o saldo com CPF/CNPJ ${cpfCnpj}`);
     }
     else {
-      return { saldo_deletado: saldo };
+      return { saldoDeletado: saldo };
     }
   }
 

@@ -29,8 +29,8 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
     try {
       this.startTransaction();
       await this.validaUsuarios(dto.pagadorCpf, dto.recebedorCpf);
-      const saldo_recebedor_pos_transacao = await this.saldoService.soma(dto.recebedorCpf, dto.valor);
-      const saldo_pagador_pos_transacao = await this.saldoService.subtrai(dto.pagadorCpf, dto.valor);
+      const saldoRecebedorPosTransacao = await this.saldoService.soma(dto.recebedorCpf, dto.valor);
+      const saldoPagadorPosTransacao = await this.saldoService.subtrai(dto.pagadorCpf, dto.valor);
       const transacao = await this.transactionsRepository.save(new Transactions(dto.valor, dto.pagadorCpf, dto.recebedorCpf));
       await this.autorizadorExterno();
       await this.enviaNotificacao();
@@ -38,8 +38,8 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
       return {
         descricao: "Saldos após a transação",
         transacao: transacao,
-        saldo_pagador: saldo_pagador_pos_transacao.valor,
-        saldo_recebedor: saldo_recebedor_pos_transacao.valor
+        saldoPagador: saldoPagadorPosTransacao.valor,
+        saldoRecebedor: saldoRecebedorPosTransacao.valor
       };
     } 
     catch (error) {
@@ -90,7 +90,7 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
   }
 
   async findByDate(date: Date) {
-    return await this.transactionsRepository.findOne({ where: { created_at: date } });
+    return await this.transactionsRepository.findOne({ where: { createdAt: date } });
   }
 
   async findAll() {
@@ -102,7 +102,7 @@ export class TransactionsService extends AbstractTypeOrmTransactionsService{
     if (!pagador) {
       throw new NotFoundException(`Usuário pagador com cpf ${pagadorCpf} não encontrado`);
     }
-    if (userType.LOJISTA === pagador.user_type) {
+    if (userType.LOJISTA === pagador.userType) {
       throw new UnprocessableEntityException("Lojista não pode ser pagador");
     }
 

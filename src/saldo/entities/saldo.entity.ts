@@ -4,10 +4,10 @@ import { v4 as uuidv4 } from "uuid";
 
 @Entity({ name: 'Saldo', schema: 'PicPay' })
 export class Saldo {
-    constructor(cpf_cnpj: number, valor: number) {
-        this.cpf_cnpj = cpf_cnpj;
+    constructor(cpfCnpj: number, valor: number) {
+        this.cpfCnpj = cpfCnpj;
         this.valor = valor;
-        this.ultima_mudanca = new Date();
+        this.ultimaMudanca = new Date();
         this.uuid = uuidv4();
     }
 
@@ -17,10 +17,10 @@ export class Saldo {
     @Column({ name: "UUID" })
     uuid: string; 
 
-    @PrimaryColumn({ name: "CPF_CNPJ" })
-    cpf_cnpj: number;
+    @PrimaryColumn({ name: "cpfCnpj" })
+    cpfCnpj: number;
 
     @Column({ name: "ULT_MUD" })
-    ultima_mudanca: Date;
+    ultimaMudanca: Date;
 }
 
